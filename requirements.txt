@@ -1,0 +1,6 @@
+Django
+psycopg2
+nltk
+numpy
+fuzzywuzzy
+python-levenshtein
