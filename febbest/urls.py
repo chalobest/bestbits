@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^lat_lng_for_stop/$', 'best.views.lat_lng_for_stop'),
+    url(r'^messaging/$', 'best.views.messaging'),
 ]
