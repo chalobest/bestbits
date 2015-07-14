@@ -1,0 +1,13 @@
+// input1 and input2 are values of two times where input1 is less than input2 and input 3 is the headway of that time slot.
+CREATE OR REPLACE FUNCTION minut(input1 float,input2 float,input3 numeric) RETURNS int
+IMMUTABLE STRICT COST 500 LANGUAGE plpgsql
+AS $$
+DECLARE
+  diff1 int ;
+  diff2 int ;
+BEGIN
+ 	diff1=floor(input2)*60+(input2-floor(input2))*100;
+	diff2=floor(input1)*60+(input1-floor(input1))*100;
+  RETURN floor((diff1-diff2)/input3);
+END;
+$$;

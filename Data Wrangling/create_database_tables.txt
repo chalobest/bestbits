@@ -1,0 +1,15 @@
+THE BEST DATABASE:
+The Database comprises of 6 tables namely:-
+STOP MASTER: It has STOPCD(Serial No.), STOPNM(Stop Name), STOPFL, ROADCD(Road Code), A_CODE(Area Codes)
+ROAD MASTER: It has ROADCD(Road Code) and ROADNM(Road Name)
+AREA MASTER: It has A_CODE(Area Code) and AREANM(Area Name)
+ROUTE DETAILS: It has RNO(Its a 4 digit code denoting the different Routes), STOPSR(Stop Sequence for a particular Route No.), STOPCD(Stop Codes), STAGE(It has true or false value depending on whether the fare is increased from that stop onwards or not) and KM(has 0.0 value where stage is false and non zero if otherwise)
+ROUTE ATLAS: It has ROUTE_NO(The description of the various bus types i.e. Alias), DEPOT(Refers to the Bus Depot), FROM(First Stop of the Route), FIRST BUS(The time for the arrival of the first bus at the ‘From’ Stop), LAST BUS(The time at which the last bus leaves the ‘From’ Stop), TO(The Last Stop of the Route), FIRST BUS(The time for the arrival of the first bus at the ‘To’ Stop), LAST BUS(The time at which the last bus leaves the ‘To’ Stop), ROUTE SPAN(The span of the Route in Kms), RUNNING TIME(It is divided into 4 sub columns-the running time corresponding to 7am-11am,11am-5pm,5pm-8pm and 8pm onwards), HEADWAY(It denotes how frequently the buses arrive at the Stop. It is further divided into 5 sub columns-upto 7am, 7am-11am, 11am-5pm, 5pm-8pm and 8pm onwards) and SCH TYPE(The days on which the corresponding Routes run) 
+  # NOTE: Each row denotes the up trip as well the down trip i.e. trip from the ‘From’ Stop to the ‘To’ Stop and trip from ‘To’ Stop to the ‘From’ Stop. We haven’t incorporated the BUSES(Am,Noon,Pm),BUS TYPE,RELIEF POINT,TRAVEL TIME columns because we don’t require that information to convert the data into GTFS.
+ROUTE MASTER: It has ROUTE(a 4 digit code denoting the different Routes), ROUTE ALIAS(Describes the various types of buses. eg. LTD, LTD EXTRA, AC, EXTRA .etc.), FROM(First Stop of the Route), TO(Last Stop of the Route), DISTANCE(Maximum span of the Route from the ‘FROM’ Stop to the ‘TO’ Stop) and STAGES(Total no. of Stages in the Route)
+
+// query to create 'Route Atlas' in postgres
+create table route_atlas (route_no varchar,depot varchar,froms varchar,sfirst varchar,slast varchar,tos varchar,dfirst varchar,dlast varchar,span varchar,r2 varchar,r3 varchar,r4 varchar,r5 varchar,h1 varchar,h2 varchar,h3 varchar,h4 varchar, h5 varchar,sch varchar);
+
+//query to create 'Route Master' in postgres
+create table route_master(route varchar,alias varchar, froms varchar,tos varchar, distance varchar,stages varchar);

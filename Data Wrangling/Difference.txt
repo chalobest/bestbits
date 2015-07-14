@@ -1,0 +1,28 @@
+And the corresponding code of difference method using the above soundex code:
+
+CREATE OR REPLACE FUNCTION difference(input1 text,input2 text) RETURNS int
+COST 500 LANGUAGE plpgsql
+AS $$
+DECLARE
+  diff int =0;
+  char1 text= soundex(input1);
+	
+  char2 text= soundex(input2);
+	
+BEGIN
+     if substr(char1,1,1) = substr(char2,1,1) then 
+	diff=diff+1;
+	end if;
+     if substr(char1,2,1) = substr(char2,2,1) then 
+	diff=diff+1;
+	end if;
+    if substr(char1,3,1) = substr(char2,3,1) then 
+	diff=diff+1;
+	end if;
+    if substr(char1,4,1) = substr(char2,4,1) then 
+	diff=diff+1;
+	end if;	
+  RETURN diff;
+END;
+$$;
+------------------------------------------------------------------------------------------------------

@@ -1,0 +1,66 @@
+//Divides route_atlas into two tables one which containes the timings column of first and last bus from source to destination named as uptrip and other contains the timings column of first and last bus from destination to source named as downtrip.
+// Queries for creating uptrip and downtrip tables.
+create table uptrip as select route_no,froms,tos,sfirst,slast,h1,h2,h3,h4,h5,id,sch from atlasf order by id;
+create table downtrip as select route_no,froms,tos,dfirst,dlast,h1,h2,h3,h4,h5,id,sch from atlasf order by id;
+
+//Deleting rows which does not have timings detail.
+delete from uptrip where sfirst isnull and slast isnull;
+delete from downtrip where dfirst isnull and dlast isnull;
+
+According to GTFS format trips that span multiple dates will have stop times greater than 24:00:00. For example, if a trip begins at 10:30:00 p.m. and ends at 2:15:00 a.m. on the following day, the stop times would be 22:30:00 and 26:15:00.
+//For that these queries have to be applied.
+update uptrip set slast=slast+24.0 where sfirst >slast;
+update downtrip set slast=slast+24.0 where sfirst >slast;
+
+//Updating routes for which timings of first bus is not given but last bus is given. These queries remove that error.
+update uptrip set sfirst=slast where sfirst isnull;
+update uptrip set slast=null where sfirst=slast;
+update downtrip set sfirst=slast where sfirst isnull;
+update downtrip set slast=null where sfirst=slast;
+
+//For making trips.txt file for GTFS add 5 columns in both uptrip and downtrip table which should contain number of trips
+in a particular time slot. The day is divided into 5 time slots before 7 A.M., 7 to 11 A.M., 11 to 5 P.M, 5 to 8 P.M. 
+and after 8 P.M. Make a function named minut which calculates the differnce between two timings and divide that difference
+by the headway of that particular slot and return number of trips in that slot of timing. Then use the following queries
+to update these five columns in both uptrip and downtrip according to different time slots.
+
+------------------------------------------------------------------------------------------------------------------------
+#update uptrip set t1=minut(sfirst,7.00,h1) where sfirst<7.00 and slast>=7.00 and h1 is not null;
+
+#update uptrip set t1=minut(sfirst,slast,h1) where sfirst<7.00 and slast<=7.00 and h1 is not null and t1 isnull;
+
+#update uptrip set t2= minut(sfirst,7.00,h1) where sfirst<=10.59 and sfirst>=7.00 and slast>=11.00 and h2 is not null;
+
+For buses which run between 7 to 11 A.M.
+#update uptrip set t2=minut(sfirst,slast,h2) where sfirst<11.00 and sfirst>=7.00 and  slast<11.00 and slast>=7.00 and h2 is not null and t2 isnull;
+
+
+#update uptrip set t2=minut(7.00,slast,h2) where sfirst<=6.59  and slast<=10.59 and slast>=7.00 and h2 is not null and t2 isnull;
+
+#update uptrip set t2=minut(7.00,11.00,h2) where sfirst<=6.59  and slast>=11.00 and h2 is not null and t2 isnull;
+
+For buses which run between 11 to 5 P.M
+#update uptrip set t3=minut(sfirst,17.00,h3) where sfirst<=16.59 and sfirst>=11.00 and slast>=17.00 and h3 is not null;
+
+#update uptrip set t3=minut(sfirst,slast,h3) where sfirst<17.00 and sfirst>=11.00 and  slast<17.00 and slast>=11.00 and h3 is not null and t3 isnull;
+
+#update uptrip set t3=minut(11.00,slast,h3) where sfirst<=10.59  and slast<=16.59 and slast>=11.00 and h3 is not null and t3 isnull;
+
+#update uptrip set t3=minut(11.00,17.00,h3) where sfirst<=10.59  and slast>=17.00 and h3 is not null and t3 isnull;
+
+For buses which run between 5 to 8 P.M
+#update uptrip set t4=minut(sfirst,20.00,h4) where sfirst<=19.59 and sfirst>=17.00 and slast>=20.00 and h4 is not null;
+
+#update uptrip set t4=minut(sfirst,slast,h4) where sfirst<20.00 and sfirst>=17.00 and  slast<20.00 and slast>=17.00 and h4 is not null and t4 isnull;
+
+#update uptrip set t4=minut(17.00,slast,h4) where sfirst<=16.59  and slast<=19.59 and slast>=17.00 and h4 is not null and t4 isnull;
+
+#update uptrip set t4=minut(17.00,20.00,h4) where sfirst<=16.59  and slast>=20.00 and h4 is not null and t4 isnull;
+
+For buses which run after 8 P.M
+#update uptrip set  t5=minut(sfirst,slast, h5) where sfirst>=20.00  and  h5 is not null and  t5 isnull;
+
+#update uptrip set  t5=minut(20.00,slast, h5) where sfirst<=19.59  and slast>=20.00  and  h5 is not null and  t5 isnull;
+------------------------------------------------------------------------------------------------------------------------
+// This function is used to create trips.txt table
+select generate_trip();

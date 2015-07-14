@@ -1,0 +1,35 @@
+//Route_alias attribute of route_master was fuzzy matched with the corresponding rfromsoute_no attribute of route_atlas along with matching the from stops of both the tables and to stops of both the tables along with from of master with to of atlas and to of master with from of atlas so that all the cases are incorporated:
+
+-------------------------------------------------------------------------------------------------------
+update atlas set route_id = rm.route_cd from rmaster rm where difference(rm.route_alias,atlas.route_no)>3 and ((difference(rm.froms,atlas.froms)>2 and difference(rm.tos,atlas.tos)>2)or(difference(rm.froms,atlas.tos)>2 and difference(rm.tos,atlas.froms)>2));
+---------------------------------------------------------------------------------------------------------
+//Then the ring routes whose route_codes's end with 4 at the end generally and have a 'R' suffix in the route_no attribute of route_master, were matched explicitly.This is the following query:
+
+--------------------------------------------------------------------------------------------------------
+update atlas set route_id = rm.route_cd from rmaster rm where (atlas.route_no like '___R') and (rm.route_alias like '%RING%' or rm.route_cd like '___4') and substr(atlas.route_no,1,3) like substr(rm.route_cd,1,3);
+--------------------------------------------------------------------------------------------------------
+
+//After this the extra and extra-limited routes were matched explicitly by means of following query:
+
+------------------------------------------------------------------------------------------------------
+update atlas set route_id = rm.route_cd from rmaster rm where (rm.route_cd like '___2' OR ROUTE_CD LIKE '___3' OR ROUTE_ALIAS LIKE '%EXTRA%') and  substr(atlas.route_no,1,2) like substr(rm.route_alias,1,2)  and ((difference(rm.froms,atlas.froms)>2 and difference(atlas.tos,rm.tos)>2) or (difference(rm.froms,atlas.tos)>2 and difference(atlas.froms,rm.tos)>2));
+------------------------------------------------------------------------------------------------------
+
+//Now once this had been done for the rest of the data route_no attribute of route_atlas was fuzzy matched with route_alias of route_master and one of the from stops or to stops were matched to incorporate the rest of the data as follows (note, this applied to only those values which had yet not updated):
+
+------------------------------------------------------------------------------------------------------
+UPDATE atlas SET ROUTE_ID = RM.ROUTE_CD FROM RMASTER RM WHERE difference(ROUTE_NO,ROUTE_ALIAS)>3 AND (difference(atlas1.froms,RM.FROMS)>2 OR difference(atlas1.tos,RM.TOS)>2) AND ROUTE_ID ISNULL;
+------------------------------------------------------------------------------------------------------
+
+//Finally those rows where route_alias matched exactly with route_no of atlas and where from and to stops were both not null simultaneously were included as follows:
+
+--------------------------------------------------------------------------------------------------
+update atlas set route_id=route_cd from rmaster where route_alias=route_no and froms is not null and tos is not null and route_id isnull;
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+//Finally the rest of the rows remaining (around 30) were manually added.
+  Lastly the tuples where the from and to stops were all not given and even route_id was not there were not incorporated in the database.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+delete from atlas1 where ROUTE_ID ISNULL and froms isnull and tos isnull;
+--------------------------------------------------------------------------------------------------------------------------------------------
