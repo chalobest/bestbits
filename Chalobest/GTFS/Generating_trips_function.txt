@@ -1,0 +1,28 @@
+create or replace function generate_trip() returns void as $$
+declare
+curs1 cursor for select * from uptrip order by id;
+rec uptrip%rowtype;
+begin
+	open curs1;
+	loop 
+	    fetch curs1 into rec;
+	    exit when not found;
+	    for i in 1..rec.t1 loop
+		insert into trips values(rec.route_id,rec.sch,rec.temp||'_'||'h1_'||i,1);
+	    end loop;
+	 for i in 1..rec.t2 loop
+		insert into trips values(rec.route_id,rec.sch,rec.temp||'_'||'h2_'||i,1);
+	    end loop;
+	for i in 1..rec.t3 loop
+		insert into trips values(rec.route_id,rec.sch,rec.temp||'_'||'h3_'||i,1);
+	    end loop;
+	for i in 1..rec.t4 loop
+		insert into trips values(rec.route_id,rec.sch,rec.temp||'_'||'h4_'||i,1);
+	    end loop;
+	for i in 1..rec.t5 loop
+		insert into trips values(rec.route_id,rec.sch,rec.temp||'_'||'h5_'||i,1);
+	    end loop;
+	end loop;
+	close curs1;
+	end;
+	$$ language plpgsql;
